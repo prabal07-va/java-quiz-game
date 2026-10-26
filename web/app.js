@@ -1,5 +1,5 @@
-/**
- * JavaQuiz Pro - Frontend Application Engine
+﻿/**
+ * quizHunt - Frontend Application Engine
  * Handles user authentication, gameplay, seconds timer, Web Audio effects, confetti, and results.
  * Strictly 100% English Language & Zero Pre-Loaded Dummy Data.
  */
@@ -388,20 +388,20 @@ class QuizGame {
   // THEME MANAGEMENT (Dark / Light)
   // ==========================================
   initTheme() {
-    const saved = localStorage.getItem('javaquiz_theme');
+    const saved = localStorage.getItem('quizhunt_theme');
     if (saved === 'light') {
       document.body.classList.add('light-mode');
-      this.dom.themeIcon.textContent = '☀️';
+      this.dom.themeIcon.textContent = 'â˜€ï¸';
     } else {
       document.body.classList.remove('light-mode');
-      this.dom.themeIcon.textContent = '🌙';
+      this.dom.themeIcon.textContent = 'ðŸŒ™';
     }
   }
 
   toggleTheme() {
     const isLight = document.body.classList.toggle('light-mode');
-    this.dom.themeIcon.textContent = isLight ? '☀️' : '🌙';
-    localStorage.setItem('javaquiz_theme', isLight ? 'light' : 'dark');
+    this.dom.themeIcon.textContent = isLight ? 'â˜€ï¸' : 'ðŸŒ™';
+    localStorage.setItem('quizhunt_theme', isLight ? 'light' : 'dark');
     this.showToast(isLight ? 'Light Mode Enabled' : 'Dark Mode Enabled');
   }
 
@@ -424,7 +424,7 @@ class QuizGame {
     // Sound toggle
     this.dom.soundBtn.addEventListener('click', () => {
       const active = this.sound.toggle();
-      this.dom.soundIcon.textContent = active ? '🔊' : '🔇';
+      this.dom.soundIcon.textContent = active ? 'ðŸ”Š' : 'ðŸ”‡';
       this.showToast(active ? 'Sound On' : 'Sound Muted');
     });
 
@@ -491,7 +491,7 @@ class QuizGame {
 
     this.dom.toggleReviewBtn.addEventListener('click', () => {
       const isHidden = this.dom.reviewContainer.classList.toggle('hidden');
-      this.dom.toggleReviewBtn.querySelector('span').textContent = isHidden ? '📝 Review Answers' : '🔼 Hide Review';
+      this.dom.toggleReviewBtn.querySelector('span').textContent = isHidden ? 'ðŸ“ Review Answers' : 'ðŸ”¼ Hide Review';
       if (!isHidden) {
         this.dom.reviewContainer.scrollIntoView({ behavior: 'smooth' });
       }
@@ -520,7 +520,7 @@ class QuizGame {
   // AUTHENTICATION & SESSION MANAGEMENT
   // ==========================================
   initAuthSession() {
-    const saved = localStorage.getItem('javaquiz_current_user');
+    const saved = localStorage.getItem('quizhunt_current_user');
     if (saved) {
       try {
         this.currentUser = JSON.parse(saved);
@@ -593,7 +593,7 @@ class QuizGame {
       }
     } catch (e) {
       // Offline fallback: Use browser localStorage user registry
-      const localUsers = JSON.parse(localStorage.getItem('javaquiz_local_users') || '{}');
+      const localUsers = JSON.parse(localStorage.getItem('quizhunt_local_users') || '{}');
       const u = localUsers[username.toLowerCase()];
       if (u && u.password === password) {
         this.setLoggedInUser({
@@ -653,7 +653,7 @@ class QuizGame {
       }
     } catch (e) {
       // Offline fallback: Save in localStorage
-      const localUsers = JSON.parse(localStorage.getItem('javaquiz_local_users') || '{}');
+      const localUsers = JSON.parse(localStorage.getItem('quizhunt_local_users') || '{}');
       const key = username.toLowerCase();
       if (localUsers[key]) {
         this.showAuthAlert('Username is already registered. Please choose another.');
@@ -667,7 +667,7 @@ class QuizGame {
         bestScore: 0
       };
       localUsers[key] = newUser;
-      localStorage.setItem('javaquiz_local_users', JSON.stringify(localUsers));
+      localStorage.setItem('quizhunt_local_users', JSON.stringify(localUsers));
 
       this.setLoggedInUser({
         username: newUser.username,
@@ -683,7 +683,7 @@ class QuizGame {
   continueAsGuest() {
     this.currentUser = null;
     this.isGuest = true;
-    localStorage.removeItem('javaquiz_current_user');
+    localStorage.removeItem('quizhunt_current_user');
     this.updateUserUI();
     this.showToast('Continuing as Guest Player.');
     this.showScreen('welcome');
@@ -692,7 +692,7 @@ class QuizGame {
   logout() {
     this.currentUser = null;
     this.isGuest = false;
-    localStorage.removeItem('javaquiz_current_user');
+    localStorage.removeItem('quizhunt_current_user');
     this.updateUserUI();
     this.showToast('You have signed out.');
     this.showScreen('auth');
@@ -701,7 +701,7 @@ class QuizGame {
   setLoggedInUser(user) {
     this.currentUser = user;
     this.isGuest = false;
-    localStorage.setItem('javaquiz_current_user', JSON.stringify(user));
+    localStorage.setItem('quizhunt_current_user', JSON.stringify(user));
     this.updateUserUI();
   }
 
@@ -766,7 +766,7 @@ class QuizGame {
     this.answerHistory = [];
 
     this.dom.liveScore.textContent = '0';
-    this.dom.categoryBadge.textContent = this.category === 'All' ? '🌟 All Topics' : this.category;
+    this.dom.categoryBadge.textContent = this.category === 'All' ? 'ðŸŒŸ All Topics' : this.category;
 
     // Fetch questions
     await this.fetchQuestions();
@@ -927,16 +927,16 @@ class QuizGame {
       this.score += 10;
       this.correctCount++;
       selectedBtn.classList.add('correct');
-      selectedBtn.querySelector('.option-status-icon').textContent = '✓';
+      selectedBtn.querySelector('.option-status-icon').textContent = 'âœ“';
       this.sound.playCorrect();
       this.showExplanation(true, q.explanation);
     } else {
       this.wrongCount++;
       selectedBtn.classList.add('wrong');
-      selectedBtn.querySelector('.option-status-icon').textContent = '✗';
+      selectedBtn.querySelector('.option-status-icon').textContent = 'âœ—';
       if (correctBtn) {
         correctBtn.classList.add('correct');
-        correctBtn.querySelector('.option-status-icon').textContent = '✓';
+        correctBtn.querySelector('.option-status-icon').textContent = 'âœ“';
       }
       this.sound.playWrong();
       this.showExplanation(false, q.explanation);
@@ -971,7 +971,7 @@ class QuizGame {
     const correctBtn = optionButtons[q.correctIndex];
     if (correctBtn) {
       correctBtn.classList.add('correct');
-      correctBtn.querySelector('.option-status-icon').textContent = '✓';
+      correctBtn.querySelector('.option-status-icon').textContent = 'âœ“';
     }
 
     this.showExplanation('timeout', q.explanation);
@@ -1030,27 +1030,27 @@ class QuizGame {
     await this.recordQuizScore(percentage);
 
     if (percentage === 100) {
-      this.dom.resultTrophy.textContent = '👑';
+      this.dom.resultTrophy.textContent = 'ðŸ‘‘';
       this.dom.resultTitle.textContent = 'Flawless Victory!';
       this.dom.performanceTag.textContent = 'Grand Java Architect';
       this.dom.performanceFeedback.textContent = 'Outstanding! You achieved a 100% perfect score under high time pressure!';
       this.confetti.launch();
       this.sound.playFanfare();
     } else if (percentage >= 80) {
-      this.dom.resultTrophy.textContent = '🏆';
+      this.dom.resultTrophy.textContent = 'ðŸ†';
       this.dom.resultTitle.textContent = 'Master Level!';
       this.dom.performanceTag.textContent = 'Senior Java Developer';
       this.dom.performanceFeedback.textContent = 'Phenomenal knowledge and speed! You mastered nearly every question!';
       this.confetti.launch();
       this.sound.playFanfare();
     } else if (percentage >= 60) {
-      this.dom.resultTrophy.textContent = '⭐';
+      this.dom.resultTrophy.textContent = 'â­';
       this.dom.resultTitle.textContent = 'Great Effort!';
       this.dom.performanceTag.textContent = 'Proficient Coder';
       this.dom.performanceFeedback.textContent = 'Good job! Review the questions you missed to polish your understanding.';
       this.sound.playFanfare();
     } else {
-      this.dom.resultTrophy.textContent = '🌱';
+      this.dom.resultTrophy.textContent = 'ðŸŒ±';
       this.dom.resultTitle.textContent = 'Keep Learning!';
       this.dom.performanceTag.textContent = 'Junior Apprentice';
       this.dom.performanceFeedback.textContent = 'Practice makes perfect! Check the explanations below and try another round.';
@@ -1105,7 +1105,7 @@ class QuizGame {
   // ==========================================
   renderReviewList() {
     this.dom.reviewContainer.classList.add('hidden');
-    this.dom.toggleReviewBtn.querySelector('span').textContent = '📝 Review Answers';
+    this.dom.toggleReviewBtn.querySelector('span').textContent = 'ðŸ“ Review Answers';
     this.dom.reviewList.innerHTML = '';
 
     const letters = ['A', 'B', 'C', 'D'];
@@ -1116,11 +1116,11 @@ class QuizGame {
 
       let badgeHtml = '';
       if (item.status === 'correct') {
-        badgeHtml = '<span class="review-badge correct">✓ Correct</span>';
+        badgeHtml = '<span class="review-badge correct">âœ“ Correct</span>';
       } else if (item.status === 'wrong') {
-        badgeHtml = '<span class="review-badge wrong">✗ Incorrect</span>';
+        badgeHtml = '<span class="review-badge wrong">âœ— Incorrect</span>';
       } else {
-        badgeHtml = '<span class="review-badge timeout">⏰ Timed Out</span>';
+        badgeHtml = '<span class="review-badge timeout">â° Timed Out</span>';
       }
 
       const userChoice = item.selectedIndex >= 0 ? `${letters[item.selectedIndex]}. ${item.question.options[item.selectedIndex]}` : 'None (Time expired)';
@@ -1172,24 +1172,24 @@ class QuizGame {
       if (this.score > (this.currentUser.bestScore || 0)) {
         this.currentUser.bestScore = this.score;
       }
-      localStorage.setItem('javaquiz_current_user', JSON.stringify(this.currentUser));
+      localStorage.setItem('quizhunt_current_user', JSON.stringify(this.currentUser));
       this.updateUserUI();
 
       // Save to personal user history
-      const historyKey = `javaquiz_history_${this.currentUser.username}`;
+      const historyKey = `quizhunt_history_${this.currentUser.username}`;
       const userHistory = JSON.parse(localStorage.getItem(historyKey) || '[]');
       userHistory.unshift(record);
       localStorage.setItem(historyKey, JSON.stringify(userHistory.slice(0, 50)));
     }
 
     // Always update global leaderboard in localStorage (for offline/standalone)
-    const localBoard = JSON.parse(localStorage.getItem('javaquiz_leaderboard') || '[]');
+    const localBoard = JSON.parse(localStorage.getItem('quizhunt_leaderboard') || '[]');
     localBoard.push(record);
     localBoard.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
       return a.timeTakenSeconds - b.timeTakenSeconds;
     });
-    localStorage.setItem('javaquiz_leaderboard', JSON.stringify(localBoard.slice(0, 30)));
+    localStorage.setItem('quizhunt_leaderboard', JSON.stringify(localBoard.slice(0, 30)));
 
     // Send to Java server backend
     try {
@@ -1225,7 +1225,7 @@ class QuizGame {
       }
     } catch (e) {
       // Fallback: Use real user data saved in browser localStorage
-      records = JSON.parse(localStorage.getItem('javaquiz_leaderboard') || '[]');
+      records = JSON.parse(localStorage.getItem('quizhunt_leaderboard') || '[]');
     }
 
     this.renderLeaderboardTable(records);
@@ -1239,7 +1239,7 @@ class QuizGame {
     }
 
     this.dom.leaderboardEmpty.classList.add('hidden');
-    const medals = ['🥇', '🥈', '🥉'];
+    const medals = ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'];
     this.dom.leaderboardRows.innerHTML = records.map((rec, i) => `
       <tr>
         <td><strong>${medals[i] || (i + 1)}</strong></td>
@@ -1281,13 +1281,13 @@ class QuizGame {
         records = await res.json();
       }
     } catch (e) {
-      const historyKey = `javaquiz_history_${this.currentUser.username}`;
+      const historyKey = `quizhunt_history_${this.currentUser.username}`;
       records = JSON.parse(localStorage.getItem(historyKey) || '[]');
     }
 
     if (!records || records.length === 0) {
       // Check local storage
-      const historyKey = `javaquiz_history_${this.currentUser.username}`;
+      const historyKey = `quizhunt_history_${this.currentUser.username}`;
       records = JSON.parse(localStorage.getItem(historyKey) || '[]');
     }
 
@@ -1316,16 +1316,16 @@ class QuizGame {
   copyResultToClipboard() {
     const accuracy = Math.round((this.correctCount / this.questions.length) * 100);
     const playerName = this.currentUser ? this.currentUser.displayName : 'Guest';
-    const text = `🏆 quizHunt Result:
-👤 Player: ${playerName}
-📚 Category: ${this.category}
-⭐ Score: ${this.score} pts (${this.correctCount}/${this.questions.length})
-🎯 Accuracy: ${accuracy}%
-⏱️ Total Time: ${this.formatTime(this.totalTimeTaken)}
-⚡ Played on quizHunt Web App`;
+    const text = `ðŸ† quizHunt Result:
+ðŸ‘¤ Player: ${playerName}
+ðŸ“š Category: ${this.category}
+â­ Score: ${this.score} pts (${this.correctCount}/${this.questions.length})
+ðŸŽ¯ Accuracy: ${accuracy}%
+â±ï¸ Total Time: ${this.formatTime(this.totalTimeTaken)}
+âš¡ Played on quizHunt Web App`;
 
     navigator.clipboard.writeText(text).then(() => {
-      this.showToast('📋 Results copied to clipboard!');
+      this.showToast('ðŸ“‹ Results copied to clipboard!');
     }).catch(() => {
       this.showToast('Failed to copy to clipboard.');
     });
@@ -1361,3 +1361,4 @@ class QuizGame {
 document.addEventListener('DOMContentLoaded', () => {
   window.quizApp = new QuizGame();
 });
+

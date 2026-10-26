@@ -6,7 +6,7 @@
   <title>quizHunt | Interactive Java Quiz Game</title>
   <style>
 /* ===================================================
-   JAVA QUIZ PRO - MODERN RESPONSIVE STYLESHEET
+   QUIZHUNT - MODERN RESPONSIVE STYLESHEET
    100% English Language Interface & Dynamic User Data
    =================================================== */
 
@@ -1584,6 +1584,7 @@ body.light-mode .leaderboard-table td {
   }
 }
 
+
 </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2093,7 +2094,7 @@ body.light-mode .leaderboard-table td {
 
   <script>
 /**
- * JavaQuiz Pro - Frontend Application Engine
+ * quizHunt - Frontend Application Engine
  * Handles user authentication, gameplay, seconds timer, Web Audio effects, confetti, and results.
  * Strictly 100% English Language & Zero Pre-Loaded Dummy Data.
  */
@@ -2482,7 +2483,7 @@ class QuizGame {
   // THEME MANAGEMENT (Dark / Light)
   // ==========================================
   initTheme() {
-    const saved = localStorage.getItem('javaquiz_theme');
+    const saved = localStorage.getItem('quizhunt_theme');
     if (saved === 'light') {
       document.body.classList.add('light-mode');
       this.dom.themeIcon.textContent = 'â˜€ï¸';
@@ -2495,7 +2496,7 @@ class QuizGame {
   toggleTheme() {
     const isLight = document.body.classList.toggle('light-mode');
     this.dom.themeIcon.textContent = isLight ? 'â˜€ï¸' : 'ðŸŒ™';
-    localStorage.setItem('javaquiz_theme', isLight ? 'light' : 'dark');
+    localStorage.setItem('quizhunt_theme', isLight ? 'light' : 'dark');
     this.showToast(isLight ? 'Light Mode Enabled' : 'Dark Mode Enabled');
   }
 
@@ -2614,7 +2615,7 @@ class QuizGame {
   // AUTHENTICATION & SESSION MANAGEMENT
   // ==========================================
   initAuthSession() {
-    const saved = localStorage.getItem('javaquiz_current_user');
+    const saved = localStorage.getItem('quizhunt_current_user');
     if (saved) {
       try {
         this.currentUser = JSON.parse(saved);
@@ -2687,7 +2688,7 @@ class QuizGame {
       }
     } catch (e) {
       // Offline fallback: Use browser localStorage user registry
-      const localUsers = JSON.parse(localStorage.getItem('javaquiz_local_users') || '{}');
+      const localUsers = JSON.parse(localStorage.getItem('quizhunt_local_users') || '{}');
       const u = localUsers[username.toLowerCase()];
       if (u && u.password === password) {
         this.setLoggedInUser({
@@ -2747,7 +2748,7 @@ class QuizGame {
       }
     } catch (e) {
       // Offline fallback: Save in localStorage
-      const localUsers = JSON.parse(localStorage.getItem('javaquiz_local_users') || '{}');
+      const localUsers = JSON.parse(localStorage.getItem('quizhunt_local_users') || '{}');
       const key = username.toLowerCase();
       if (localUsers[key]) {
         this.showAuthAlert('Username is already registered. Please choose another.');
@@ -2761,7 +2762,7 @@ class QuizGame {
         bestScore: 0
       };
       localUsers[key] = newUser;
-      localStorage.setItem('javaquiz_local_users', JSON.stringify(localUsers));
+      localStorage.setItem('quizhunt_local_users', JSON.stringify(localUsers));
 
       this.setLoggedInUser({
         username: newUser.username,
@@ -2777,7 +2778,7 @@ class QuizGame {
   continueAsGuest() {
     this.currentUser = null;
     this.isGuest = true;
-    localStorage.removeItem('javaquiz_current_user');
+    localStorage.removeItem('quizhunt_current_user');
     this.updateUserUI();
     this.showToast('Continuing as Guest Player.');
     this.showScreen('welcome');
@@ -2786,7 +2787,7 @@ class QuizGame {
   logout() {
     this.currentUser = null;
     this.isGuest = false;
-    localStorage.removeItem('javaquiz_current_user');
+    localStorage.removeItem('quizhunt_current_user');
     this.updateUserUI();
     this.showToast('You have signed out.');
     this.showScreen('auth');
@@ -2795,7 +2796,7 @@ class QuizGame {
   setLoggedInUser(user) {
     this.currentUser = user;
     this.isGuest = false;
-    localStorage.setItem('javaquiz_current_user', JSON.stringify(user));
+    localStorage.setItem('quizhunt_current_user', JSON.stringify(user));
     this.updateUserUI();
   }
 
@@ -3266,24 +3267,24 @@ class QuizGame {
       if (this.score > (this.currentUser.bestScore || 0)) {
         this.currentUser.bestScore = this.score;
       }
-      localStorage.setItem('javaquiz_current_user', JSON.stringify(this.currentUser));
+      localStorage.setItem('quizhunt_current_user', JSON.stringify(this.currentUser));
       this.updateUserUI();
 
       // Save to personal user history
-      const historyKey = `javaquiz_history_${this.currentUser.username}`;
+      const historyKey = `quizhunt_history_${this.currentUser.username}`;
       const userHistory = JSON.parse(localStorage.getItem(historyKey) || '[]');
       userHistory.unshift(record);
       localStorage.setItem(historyKey, JSON.stringify(userHistory.slice(0, 50)));
     }
 
     // Always update global leaderboard in localStorage (for offline/standalone)
-    const localBoard = JSON.parse(localStorage.getItem('javaquiz_leaderboard') || '[]');
+    const localBoard = JSON.parse(localStorage.getItem('quizhunt_leaderboard') || '[]');
     localBoard.push(record);
     localBoard.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
       return a.timeTakenSeconds - b.timeTakenSeconds;
     });
-    localStorage.setItem('javaquiz_leaderboard', JSON.stringify(localBoard.slice(0, 30)));
+    localStorage.setItem('quizhunt_leaderboard', JSON.stringify(localBoard.slice(0, 30)));
 
     // Send to Java server backend
     try {
@@ -3319,7 +3320,7 @@ class QuizGame {
       }
     } catch (e) {
       // Fallback: Use real user data saved in browser localStorage
-      records = JSON.parse(localStorage.getItem('javaquiz_leaderboard') || '[]');
+      records = JSON.parse(localStorage.getItem('quizhunt_leaderboard') || '[]');
     }
 
     this.renderLeaderboardTable(records);
@@ -3375,13 +3376,13 @@ class QuizGame {
         records = await res.json();
       }
     } catch (e) {
-      const historyKey = `javaquiz_history_${this.currentUser.username}`;
+      const historyKey = `quizhunt_history_${this.currentUser.username}`;
       records = JSON.parse(localStorage.getItem(historyKey) || '[]');
     }
 
     if (!records || records.length === 0) {
       // Check local storage
-      const historyKey = `javaquiz_history_${this.currentUser.username}`;
+      const historyKey = `quizhunt_history_${this.currentUser.username}`;
       records = JSON.parse(localStorage.getItem(historyKey) || '[]');
     }
 
@@ -3455,6 +3456,7 @@ class QuizGame {
 document.addEventListener('DOMContentLoaded', () => {
   window.quizApp = new QuizGame();
 });
+
 
 </script>
 </body>
