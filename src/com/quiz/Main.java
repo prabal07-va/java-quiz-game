@@ -35,7 +35,7 @@ public class Main {
 
             // Register graceful shutdown hook
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println("\nStopping Java Quiz Game Server...");
+                System.out.println("\nStopping quizHunt Server...");
                 server.stop();
                 System.out.println("Server stopped successfully.");
             }));

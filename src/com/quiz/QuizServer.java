@@ -52,7 +52,7 @@ public class QuizServer {
 
         server.start();
         System.out.println("==================================================");
-        System.out.println("  Java Quiz Game Server is running!");
+        System.out.println("  quizHunt Web Server is running!");
         System.out.println("  Access webpage at: http://localhost:" + port);
         System.out.println("==================================================");
     }

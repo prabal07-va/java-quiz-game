@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JavaQuiz Pro | Interactive Java Quiz Game</title>
+  <title>quizHunt | Interactive Java Quiz Game</title>
   <style>
 /* ===================================================
    JAVA QUIZ PRO - MODERN RESPONSIVE STYLESHEET
@@ -1602,9 +1602,9 @@ body.light-mode .leaderboard-table td {
     <!-- Header -->
     <header class="app-header">
       <div class="brand" id="brand-home" style="cursor: pointer;" title="Back to Home">
-        <div class="brand-icon">â˜•</div>
+        <div class="brand-icon">ðŸŽ¯</div>
         <div class="brand-text">
-          <h1>JavaQuiz<span class="highlight">Pro</span></h1>
+          <h1>quiz<span class="highlight">Hunt</span></h1>
           <p class="tagline">Interactive Java Web Quiz &bull; Real-time Seconds Timer</p>
         </div>
       </div>
@@ -1735,7 +1735,7 @@ body.light-mode .leaderboard-table td {
       <section id="screen-welcome" class="screen active">
         <div class="welcome-hero">
           <span class="badge hero-badge">ðŸš€ Challenge Your Knowledge</span>
-          <h2 id="welcome-greeting">Welcome to JavaQuiz Pro!</h2>
+          <h2 id="welcome-greeting">Welcome to quizHunt!</h2>
           <p>Answer questions before the seconds timer runs out! Complete all rounds to view your detailed end results and rank on the leaderboard.</p>
         </div>
 
@@ -2087,7 +2087,7 @@ body.light-mode .leaderboard-table td {
 
     <!-- Footer -->
     <footer class="app-footer">
-      <p>Powered by <strong>Java SE 26 Web Server</strong> &bull; English Language &bull; Real-time Seconds Timer &bull; 100% Dynamic User Data</p>
+      <p>Powered by <strong>quizHunt Java SE 26 Web Server</strong> &bull; English Language &bull; Real-time Seconds Timer &bull; 100% Dynamic User Data</p>
     </footer>
   </div>
 
@@ -2810,7 +2810,7 @@ class QuizGame {
     } else {
       this.dom.userNameDisplay.textContent = this.isGuest ? 'Guest' : 'Not Signed In';
       this.dom.authActionText.textContent = 'Sign In';
-      this.dom.welcomeGreeting.textContent = this.isGuest ? 'Welcome, Guest Player!' : 'Welcome to JavaQuiz Pro!';
+      this.dom.welcomeGreeting.textContent = this.isGuest ? 'Welcome, Guest Player!' : 'Welcome to quizHunt!';
       this.dom.userStatsBanner.classList.add('hidden');
     }
   }
@@ -3410,13 +3410,13 @@ class QuizGame {
   copyResultToClipboard() {
     const accuracy = Math.round((this.correctCount / this.questions.length) * 100);
     const playerName = this.currentUser ? this.currentUser.displayName : 'Guest';
-    const text = `ðŸ† JavaQuiz Pro Result:
+    const text = `ðŸ† quizHunt Result:
 ðŸ‘¤ Player: ${playerName}
 ðŸ“š Category: ${this.category}
 â­ Score: ${this.score} pts (${this.correctCount}/${this.questions.length})
 ðŸŽ¯ Accuracy: ${accuracy}%
 â±ï¸ Total Time: ${this.formatTime(this.totalTimeTaken)}
-âš¡ Played on JavaQuiz Pro Web App`;
+âš¡ Played on quizHunt Web App`;
 
     navigator.clipboard.writeText(text).then(() => {
       this.showToast('ðŸ“‹ Results copied to clipboard!');

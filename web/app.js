@@ -716,7 +716,7 @@ class QuizGame {
     } else {
       this.dom.userNameDisplay.textContent = this.isGuest ? 'Guest' : 'Not Signed In';
       this.dom.authActionText.textContent = 'Sign In';
-      this.dom.welcomeGreeting.textContent = this.isGuest ? 'Welcome, Guest Player!' : 'Welcome to JavaQuiz Pro!';
+      this.dom.welcomeGreeting.textContent = this.isGuest ? 'Welcome, Guest Player!' : 'Welcome to quizHunt!';
       this.dom.userStatsBanner.classList.add('hidden');
     }
   }
@@ -1316,13 +1316,13 @@ class QuizGame {
   copyResultToClipboard() {
     const accuracy = Math.round((this.correctCount / this.questions.length) * 100);
     const playerName = this.currentUser ? this.currentUser.displayName : 'Guest';
-    const text = `🏆 JavaQuiz Pro Result:
+    const text = `🏆 quizHunt Result:
 👤 Player: ${playerName}
 📚 Category: ${this.category}
 ⭐ Score: ${this.score} pts (${this.correctCount}/${this.questions.length})
 🎯 Accuracy: ${accuracy}%
 ⏱️ Total Time: ${this.formatTime(this.totalTimeTaken)}
-⚡ Played on JavaQuiz Pro Web App`;
+⚡ Played on quizHunt Web App`;
 
     navigator.clipboard.writeText(text).then(() => {
       this.showToast('📋 Results copied to clipboard!');

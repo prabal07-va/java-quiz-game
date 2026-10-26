@@ -1,11 +1,11 @@
-# ☕ Java Quiz Game Web Application
+# 🎯 quizHunt - Interactive Java Quiz Web Game
 
 > 🌐 **Live Web Version (Play on any PC/Mobile)**:
 > 👉 **[https://prabal07-va.github.io/java-quiz-game/](https://prabal07-va.github.io/java-quiz-game/)**
 
 ---
 
-A full-stack Java web project featuring an interactive Quiz Game webpage with real-time seconds countdown timer, dynamic question evaluation, sound effects, animated confetti, and a detailed end result breakdown with answer review and persistent leaderboard.
+A full-stack Java web application featuring user authentication, interactive quiz gameplay with real-time seconds countdown timer, dynamic question evaluation, sound effects, animated confetti, and a detailed end result breakdown with answer review and persistent leaderboard. Zero pre-loaded dummy data — all records reflect real player activity.
 
 ---
 
