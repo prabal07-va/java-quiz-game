@@ -21,6 +21,7 @@ public class QuizServer {
     private final int port;
     private final QuestionService questionService;
     private final ScoreService scoreService;
+    private final UserService userService;
     private final Path webRootDir;
     private HttpServer server;
 
@@ -29,6 +30,7 @@ public class QuizServer {
         this.webRootDir = webRootDir;
         this.questionService = new QuestionService();
         this.scoreService = new ScoreService();
+        this.userService = new UserService();
     }
 
     public void start() throws IOException {
@@ -40,6 +42,10 @@ public class QuizServer {
         server.createContext("/api/categories", new CategoriesHandler());
         server.createContext("/api/leaderboard", new LeaderboardHandler());
         server.createContext("/api/submit", new SubmitScoreHandler());
+        server.createContext("/api/auth/register", new RegisterHandler());
+        server.createContext("/api/auth/login", new LoginHandler());
+        server.createContext("/api/auth/profile", new ProfileHandler());
+        server.createContext("/api/user/history", new UserHistoryHandler());
 
         // Static files handler for root and assets
         server.createContext("/", new StaticFileHandler());
@@ -118,7 +124,7 @@ public class QuizServer {
                 return;
             }
 
-            String json = scoreService.getLeaderboardJson(15);
+            String json = scoreService.getLeaderboardJson(20);
             sendJsonResponse(exchange, 200, json);
         }
     }
@@ -150,11 +156,118 @@ public class QuizServer {
 
                 ScoreRecord record = new ScoreRecord(name, cat, score, correctAnswers, total, timeTaken);
                 scoreService.addScore(record);
+                userService.recordGame(name, score);
 
                 sendJsonResponse(exchange, 200, "{\"status\":\"ok\",\"record\":" + record.toJson() + "}");
             } catch (Exception e) {
                 sendJsonResponse(exchange, 400, "{\"error\":\"Invalid payload: " + e.getMessage() + "\"}");
             }
+        }
+    }
+
+    private class RegisterHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            addCorsHeaders(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                return;
+            }
+
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                sendJsonResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+                return;
+            }
+
+            try (InputStream is = exchange.getRequestBody()) {
+                String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                Map<String, String> jsonMap = parseSimpleJson(body);
+
+                String username = jsonMap.get("username");
+                String password = jsonMap.get("password");
+                String displayName = jsonMap.getOrDefault("displayName", username);
+
+                User user = userService.register(username, password, displayName);
+                sendJsonResponse(exchange, 200, "{\"status\":\"ok\",\"user\":" + user.toJson() + "}");
+            } catch (IllegalArgumentException e) {
+                sendJsonResponse(exchange, 400, "{\"error\":\"" + escapeJson(e.getMessage()) + "\"}");
+            } catch (Exception e) {
+                sendJsonResponse(exchange, 500, "{\"error\":\"Internal server error: " + escapeJson(e.getMessage()) + "\"}");
+            }
+        }
+    }
+
+    private class LoginHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            addCorsHeaders(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                return;
+            }
+
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                sendJsonResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+                return;
+            }
+
+            try (InputStream is = exchange.getRequestBody()) {
+                String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                Map<String, String> jsonMap = parseSimpleJson(body);
+
+                String username = jsonMap.get("username");
+                String password = jsonMap.get("password");
+
+                User user = userService.authenticate(username, password);
+                if (user != null) {
+                    sendJsonResponse(exchange, 200, "{\"status\":\"ok\",\"user\":" + user.toJson() + "}");
+                } else {
+                    sendJsonResponse(exchange, 401, "{\"error\":\"Invalid username or password. Please try again.\"}");
+                }
+            } catch (Exception e) {
+                sendJsonResponse(exchange, 500, "{\"error\":\"Internal error: " + escapeJson(e.getMessage()) + "\"}");
+            }
+        }
+    }
+
+    private class ProfileHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            addCorsHeaders(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                return;
+            }
+
+            Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
+            String username = params.get("username");
+            if (username == null || username.trim().isEmpty()) {
+                sendJsonResponse(exchange, 400, "{\"error\":\"Username parameter required\"}");
+                return;
+            }
+
+            User user = userService.getUser(username);
+            if (user != null) {
+                sendJsonResponse(exchange, 200, "{\"status\":\"ok\",\"user\":" + user.toJson() + "}");
+            } else {
+                sendJsonResponse(exchange, 404, "{\"error\":\"User not found\"}");
+            }
+        }
+    }
+
+    private class UserHistoryHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            addCorsHeaders(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                return;
+            }
+
+            Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
+            String username = params.get("username");
+            String json = scoreService.getUserHistoryJson(username);
+            sendJsonResponse(exchange, 200, json);
         }
     }
 
@@ -271,5 +384,10 @@ public class QuizServer {
             }
         }
         return map;
+    }
+
+    private static String escapeJson(String raw) {
+        if (raw == null) return "";
+        return raw.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 }
