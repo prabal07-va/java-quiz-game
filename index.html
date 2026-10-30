@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>quizHunt | Interactive Java Quiz Game</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Ambient Background Glows -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand" id="brand-home" style="cursor: pointer;" title="Back to Home">
+        <div class="brand-icon">🎯</div>
+        <div class="brand-text">
+          <h1>quiz<span class="highlight">Hunt</span></h1>
+          <p class="tagline">Interactive Java Web Quiz &bull; Real-time Seconds Timer</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Theme Toggle -->
+        <button id="theme-btn" class="icon-btn" title="Toggle Light / Dark Mode">
+          <span id="theme-icon">🌙</span>
+        </button>
+
+        <!-- Sound Toggle -->
+        <button id="sound-btn" class="icon-btn" title="Toggle Sound (Mute/Unmute)">
+          <span class="icon" id="sound-icon">🔊</span>
+        </button>
+
+        <!-- History Button -->
+        <button id="history-btn" class="pill-btn secondary small" title="View Personal Quiz History">
+          <span>📊</span> History
+        </button>
+
+        <!-- Leaderboard Button -->
+        <button id="leaderboard-btn" class="pill-btn secondary small" title="View Global Leaderboard">
+          <span>🏆</span> Leaderboard
+        </button>
+
+        <!-- User Profile Pill -->
+        <div id="user-pill" class="user-pill">
+          <span class="user-avatar" id="user-avatar">👤</span>
+          <span class="user-name-label" id="user-name-display">Guest</span>
+          <button id="auth-action-btn" class="pill-btn outline small" title="Sign In or Sign Out">
+            <span id="auth-action-text">Sign In</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Card -->
+    <main class="main-card">
+
+      <!-- ================= SCREEN 0: AUTHENTICATION (LOGIN & REGISTER) ================= -->
+      <section id="screen-auth" class="screen">
+        <div class="auth-card">
+          <div class="auth-header">
+            <div class="auth-icon-badge">🔐</div>
+            <h2>Account Access</h2>
+            <p>Sign in to save your personal quiz records, track your progress, and climb the leaderboard.</p>
+          </div>
+
+          <!-- Auth Tabs -->
+          <div class="auth-tabs">
+            <button id="tab-login" class="auth-tab active">Sign In</button>
+            <button id="tab-register" class="auth-tab">Create Account</button>
+          </div>
+
+          <!-- Alert Notice Box -->
+          <div id="auth-alert" class="auth-alert hidden"></div>
+
+          <!-- Sign In Form -->
+          <form id="login-form" class="auth-form">
+            <div class="form-group">
+              <label for="login-username">Username</label>
+              <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                <input type="text" id="login-username" placeholder="Enter your username..." autocomplete="username" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="login-password" placeholder="Enter your password..." autocomplete="current-password" required>
+              </div>
+            </div>
+
+            <button type="submit" class="pill-btn primary full-width">
+              <span>Sign In</span> <span class="arrow">&rarr;</span>
+            </button>
+          </form>
+
+          <!-- Register Form -->
+          <form id="register-form" class="auth-form hidden">
+            <div class="form-group">
+              <label for="reg-username">Username</label>
+              <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                <input type="text" id="reg-username" placeholder="At least 3 characters..." autocomplete="username" required minlength="3">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="reg-name">Display Name (Full Name)</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🏷️</span>
+                <input type="text" id="reg-name" placeholder="How you want to be called..." required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="reg-password">Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="reg-password" placeholder="At least 4 characters..." autocomplete="new-password" required minlength="4">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="reg-password-confirm">Confirm Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon">✔️</span>
+                <input type="password" id="reg-password-confirm" placeholder="Confirm your password..." autocomplete="new-password" required minlength="4">
+              </div>
+            </div>
+
+            <button type="submit" class="pill-btn primary full-width">
+              <span>Create Account</span> <span class="arrow">&rarr;</span>
+            </button>
+          </form>
+
+          <div class="auth-guest-row">
+            <span>Or prefer to play immediately?</span>
+            <button id="guest-btn" class="link-btn" type="button">Continue as Guest &rarr;</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 1: WELCOME & QUIZ CONFIGURATION ================= -->
+      <section id="screen-welcome" class="screen active">
+        <div class="welcome-hero">
+          <span class="badge hero-badge">🚀 Challenge Your Knowledge</span>
+          <h2 id="welcome-greeting">Welcome to quizHunt!</h2>
+          <p>Answer questions before the seconds timer runs out! Complete all rounds to view your detailed end results and rank on the leaderboard.</p>
+        </div>
+
+        <!-- User Stats Preview Banner (If Logged In) -->
+        <div id="user-stats-banner" class="user-stats-banner hidden">
+          <div class="user-stat-item">
+            <span class="stat-number" id="user-games-count">0</span>
+            <span class="stat-title">Quizzes Completed</span>
+          </div>
+          <div class="user-stat-divider"></div>
+          <div class="user-stat-item">
+            <span class="stat-number" id="user-best-score">0 pts</span>
+            <span class="stat-title">Personal Best Score</span>
+          </div>
+        </div>
+
+        <form id="quiz-config-form" class="config-grid">
+          <!-- Category Selection -->
+          <div class="config-group full-width">
+            <label>Select Category</label>
+            <div class="category-chips" id="category-selector">
+              <label class="chip">
+                <input type="radio" name="category" value="All" checked>
+                <span class="chip-label">🌟 All Topics</span>
+              </label>
+              <label class="chip">
+                <input type="radio" name="category" value="Java Basics">
+                <span class="chip-label">☕ Java Basics</span>
+              </label>
+              <label class="chip">
+                <input type="radio" name="category" value="OOP Concepts">
+                <span class="chip-label">🧩 OOP Concepts</span>
+              </label>
+              <label class="chip">
+                <input type="radio" name="category" value="Collections">
+                <span class="chip-label">📦 Collections</span>
+              </label>
+              <label class="chip">
+                <input type="radio" name="category" value="Web Technologies">
+                <span class="chip-label">🌐 Web Technologies</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Timer Setting -->
+          <div class="config-group">
+            <label>Seconds Timer per Question</label>
+            <div class="timer-mode-selector">
+              <label class="timer-card">
+                <input type="radio" name="timer-seconds" value="10">
+                <div class="card-inner">
+                  <span class="timer-icon">⚡</span>
+                  <span class="timer-time">10s</span>
+                  <span class="timer-desc">Blitz Speed</span>
+                </div>
+              </label>
+              <label class="timer-card">
+                <input type="radio" name="timer-seconds" value="15" checked>
+                <div class="card-inner">
+                  <span class="timer-icon">⏱️</span>
+                  <span class="timer-time">15s</span>
+                  <span class="timer-desc">Standard</span>
+                </div>
+              </label>
+              <label class="timer-card">
+                <input type="radio" name="timer-seconds" value="30">
+                <div class="card-inner">
+                  <span class="timer-icon">🧘</span>
+                  <span class="timer-time">30s</span>
+                  <span class="timer-desc">Relaxed</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Question Count -->
+          <div class="config-group">
+            <label>Question Count</label>
+            <div class="count-selector">
+              <label class="chip count-chip">
+                <input type="radio" name="question-count" value="5">
+                <span class="chip-label">5 Questions</span>
+              </label>
+              <label class="chip count-chip">
+                <input type="radio" name="question-count" value="10" checked>
+                <span class="chip-label">10 Questions</span>
+              </label>
+              <label class="chip count-chip">
+                <input type="radio" name="question-count" value="15">
+                <span class="chip-label">15 Questions</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="action-row full-width">
+            <button type="submit" id="start-btn" class="pill-btn primary pulse-btn">
+              <span>Start Quiz</span> <span class="arrow">&rarr;</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="tips-box">
+          <div class="tips-title">💡 Keyboard Shortcuts:</div>
+          <p>Press <strong>1, 2, 3, 4</strong> or <strong>A, B, C, D</strong> on your keyboard to pick options quickly. Press <strong>Enter</strong> to advance to the next question.</p>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 2: ACTIVE QUIZ ================= -->
+      <section id="screen-quiz" class="screen">
+        <!-- Top Status Bar -->
+        <div class="quiz-top-bar">
+          <div class="progress-info">
+            <span class="badge" id="quiz-category-badge">Java Basics</span>
+            <span class="question-tracker">Question <strong id="current-q-num">1</strong> / <span id="total-q-num">10</span></span>
+          </div>
+
+          <!-- Seconds Timer Ring -->
+          <div class="timer-container" id="timer-box" title="Remaining Seconds">
+            <svg class="timer-svg" viewBox="0 0 80 80">
+              <circle class="timer-circle-bg" cx="40" cy="40" r="34"></circle>
+              <circle id="timer-progress-circle" class="timer-circle-fg" cx="40" cy="40" r="34"></circle>
+            </svg>
+            <div class="timer-center-text">
+              <span id="timer-seconds-display">15</span>
+              <span class="timer-unit">sec</span>
+            </div>
+          </div>
+
+          <!-- Current Score Counter -->
+          <div class="score-tracker">
+            <span class="score-label">Score</span>
+            <span class="score-value" id="live-score">0</span>
+          </div>
+        </div>
+
+        <!-- Overall Progress Bar -->
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%"></div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="question-card">
+          <div class="question-content">
+            <h3 id="question-text">Loading question...</h3>
+          </div>
+
+          <!-- Options Container -->
+          <div class="options-grid" id="options-container">
+            <!-- Dynamically populated options -->
+          </div>
+
+          <!-- Explanation Banner (Shown after answering or timeout) -->
+          <div id="explanation-box" class="explanation-box hidden">
+            <div class="explanation-header">
+              <span id="explanation-icon">💡</span>
+              <span id="explanation-title">Explanation</span>
+            </div>
+            <p id="explanation-text"></p>
+          </div>
+        </div>
+
+        <!-- Quiz Footer Controls -->
+        <div class="quiz-footer">
+          <div class="quiz-hint" id="quiz-hint-text">
+            <span>⌨️ Press 1-4 or click an option</span>
+          </div>
+          <button id="next-btn" class="pill-btn primary" disabled>
+            <span id="next-btn-text">Next Question</span> <span class="arrow">&rarr;</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 3: END RESULT ================= -->
+      <section id="screen-result" class="screen">
+        <div class="result-header">
+          <div class="result-badge-container">
+            <div class="result-trophy" id="result-trophy-emoji">🏆</div>
+          </div>
+          <h2 id="result-title">Quiz Completed!</h2>
+          <p id="result-subtitle">Here is your complete performance breakdown.</p>
+        </div>
+
+        <!-- Result Circle & Performance -->
+        <div class="result-score-overview">
+          <div class="result-circle-box">
+            <svg class="result-svg" viewBox="0 0 140 140">
+              <circle class="result-circle-bg" cx="70" cy="70" r="58"></circle>
+              <circle id="result-circle-fg" class="result-circle-fg" cx="70" cy="70" r="58"></circle>
+            </svg>
+            <div class="result-circle-content">
+              <span id="result-percentage-display" class="percent-val">0%</span>
+              <span class="percent-label">Accuracy</span>
+            </div>
+          </div>
+
+          <div class="result-summary-text">
+            <div class="player-greeting">Well done, <strong id="result-player-name">Player</strong>!</div>
+            <div class="performance-tag" id="performance-tag">Java Master</div>
+            <p id="performance-feedback">You demonstrated deep understanding of the concepts!</p>
+          </div>
+        </div>
+
+        <!-- Result Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-icon">🎯</span>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-score">0 pts</span>
+              <span class="stat-label">Final Score</span>
+            </div>
+          </div>
+          <div class="stat-card correct">
+            <span class="stat-icon">✅</span>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-correct">0 / 0</span>
+              <span class="stat-label">Correct Answers</span>
+            </div>
+          </div>
+          <div class="stat-card wrong">
+            <span class="stat-icon">❌</span>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-wrong">0</span>
+              <span class="stat-label">Incorrect Answers</span>
+            </div>
+          </div>
+          <div class="stat-card timeout">
+            <span class="stat-icon">⏰</span>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-timeout">0</span>
+              <span class="stat-label">Timed Out</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">⏱️</span>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-total-time">0s</span>
+              <span class="stat-label">Total Time</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">⚡</span>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-avg-time">0s</span>
+              <span class="stat-label">Avg Speed / Question</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Actions -->
+        <div class="result-actions">
+          <button id="restart-btn" class="pill-btn primary">
+            <span>🔄 Play Again</span>
+          </button>
+          <button id="toggle-review-btn" class="pill-btn secondary">
+            <span>📝 Review Answers</span>
+          </button>
+          <button id="share-result-btn" class="pill-btn outline">
+            <span>📋 Copy Result</span>
+          </button>
+        </div>
+
+        <!-- Detailed Review Section -->
+        <div id="review-container" class="review-container hidden">
+          <h3 class="review-title">📋 Question-by-Question Detailed Review</h3>
+          <div id="review-list" class="review-list">
+            <!-- Dynamically populated question reviews -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Leaderboard Modal (Zero Pre-loaded Fake Scores) -->
+    <div id="leaderboard-modal" class="modal-overlay hidden">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span>🏆</span> Global Hall of Fame
+          </div>
+          <button id="close-leaderboard-btn" class="icon-btn close-btn" title="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Category</th>
+                <th>Score</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-rows">
+              <!-- Dynamically populated real user scores only -->
+            </tbody>
+          </table>
+          <div id="leaderboard-empty" class="empty-state-box hidden">
+            <div class="empty-icon">🏆</div>
+            <h4>No Scores Recorded Yet</h4>
+            <p>Complete a quiz game to set the very first high score on this leaderboard!</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="refresh-leaderboard-btn" class="pill-btn outline small">🔄 Refresh</button>
+          <button id="modal-ok-btn" class="pill-btn primary small">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal History Modal -->
+    <div id="history-modal" class="modal-overlay hidden">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span>📊</span> My Quiz History
+          </div>
+          <button id="close-history-btn" class="icon-btn close-btn" title="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Score</th>
+                <th>Accuracy</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="history-rows">
+              <!-- Dynamically populated user history only -->
+            </tbody>
+          </table>
+          <div id="history-empty" class="empty-state-box hidden">
+            <div class="empty-icon">🎮</div>
+            <h4>No Quiz History Yet</h4>
+            <p>You haven't completed any quizzes yet. Play a game to record your personal stats here!</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="history-ok-btn" class="pill-btn primary small">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">Message text here</div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Powered by <strong>quizHunt Java SE 26 Web Server</strong> &bull; English Language &bull; Real-time Seconds Timer &bull; 100% Dynamic User Data</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
